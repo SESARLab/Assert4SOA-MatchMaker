@@ -1,0 +1,78 @@
+import java.util.ArrayList;
+
+import org.w3c.dom.Document;
+import eu.assert4soa.datamodel.ASSERT;
+import eu.assert4soa.datamodel.CandidateService;
+import eu.assert4soa.datamodel.datamodelFactory;
+
+
+
+
+/*******************************************************************
+ * Copyright (c) - Università degli Studi di Milano (Crema)
+ *
+ * @author Jonatan Maggesi <jmaggesi@gmail.com>
+ *
+ ******************************************************************/
+
+/**
+ * @author Jonatan Maggesi
+ *
+ */
+public class Program {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		SlaveMatchMaker match = new SlaveMatchMaker("localhost", 1984, "developer", "developer");
+		ArrayList<String> results = match.getSubClasses("integrity_AES_128", true);
+		
+		System.out.println("Risultati ottenuti dall'Ontologia SOTTOCLASSI di integrity: ");
+		
+		if (results != null){
+			for (String result : results) {
+				System.out.println(result);
+			}
+		} else {
+			System.out.println("Results vuoto");
+		}
+		
+		System.out.println("");
+		results = match.getSuperClasses("integrity_AES_256", false);
+		
+		System.out.println("Risultati ottenuti dall'Ontologia SUPERCLASSI di integrity_AES_256: ");
+		
+		if (results != null){
+			for (String result : results) {
+				System.out.println(result);
+			}
+		}
+		datamodelFactory dmf = datamodelFactory.eINSTANCE;
+		//ASSERT test = dmf.createASSERT("Test");
+		
+		ArrayList<ASSERT> asserts = new ArrayList<ASSERT>();
+		
+		System.out.println("");
+		System.out.println("ASSERT Presenti nel DB");
+		System.out.println("");
+		
+		results = match.getAllAssert();
+		if (results != null){
+			System.out.println("Numero di assert presenti nel db: " + results.size());
+			
+			for (String result : results) {
+				System.out.println("");
+				System.out.println(result);
+				
+				asserts.add(dmf.createASSERT(result));
+				
+			}
+		}
+		
+		for(ASSERT asser : asserts){
+			asser.getSamlAssertDOM();
+		}
+	}
+
+}

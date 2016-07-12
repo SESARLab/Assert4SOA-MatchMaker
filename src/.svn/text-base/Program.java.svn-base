@@ -1,0 +1,235 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
+
+import org.w3c.dom.Document;
+import eu.assert4soa.datamodel.ASSERT;
+import eu.assert4soa.datamodel.CandidateService;
+import eu.assert4soa.datamodel.PartiallyOrderedSet;
+import eu.assert4soa.datamodel.datamodelFactory;
+import eu.unimi.ematchmakerconfiguration.ModelWeight;
+import eu.unimi.ematchmakerconfiguration.QualityLevel;
+import eu.unimi.ontologyquestioner.BaseXOntologyManager;
+import eu.unimi.retriever.Retriever;
+
+
+
+
+/*******************************************************************
+ * Copyright (c) - Università degli Studi di Milano (Crema)
+ *
+ * @author Jonatan Maggesi <jmaggesi@gmail.com>
+ *
+ ******************************************************************/
+
+/**
+ * @author Jonatan Maggesi
+ *
+ */
+public class Program {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		BaseXOntologyManager match = new BaseXOntologyManager("localhost", 1984, "developer", "developer");
+		ArrayList<String> results = match.getSubClasses("integrity_AES_128", true);
+		
+		System.out.println("Risultati ottenuti dall'Ontologia SOTTOCLASSI di integrity: ");
+		
+		if (results != null){
+			for (String result : results) {
+				System.out.println(result);
+			}
+		} else {
+			System.out.println("Results vuoto");
+		}
+		
+		System.out.println("");
+		results = match.getSuperClasses("integrity_AES_256", false);
+		
+		System.out.println("Risultati ottenuti dall'Ontologia SUPERCLASSI di integrity_AES_256: ");
+		
+		if (results != null){
+			for (String result : results) {
+				System.out.println(result);
+			}
+		}
+		datamodelFactory dmf = datamodelFactory.eINSTANCE;
+		//ASSERT test = dmf.createASSERT("Test");
+		
+		Set<ASSERT> asserts = new HashSet<ASSERT>();
+		
+		System.out.println("");
+		System.out.println("ASSERT Presenti nel DB");
+		System.out.println("");
+		
+		results = match.getAllAssert();
+		if (results != null){
+			System.out.println("Numero di assert presenti nel db: " + results.size());
+			
+			for (String result : results) {
+				//System.out.println("");
+				//System.out.println(result);
+				
+				asserts.add(dmf.createASSERT(result));
+				
+			}
+		}
+		
+		HashMap<String, Double> testMetrics = new HashMap<String, Double>();
+		HashMap<String, Double> modelIndexes = new HashMap<String, Double>();		
+		
+		for(ASSERT asser : asserts){
+			System.out.println();
+			System.out.println("Proprietˆ di sicurezza: " + Retriever.getSecurityPropertyName(asser));
+			System.out.println("Modello del Servizio: " + Retriever.getModelType(asser));
+			System.out.println();
+			System.out.println("Metriche Test: ");
+			
+			testMetrics = Retriever.getTestMetrics(asser);
+			
+			for(Map.Entry<String, Double> cursor : testMetrics.entrySet()){
+				System.out.println("Nome Metrica : " + cursor.getKey() + " Valore: " + cursor.getValue());
+			}
+			
+			System.out.println();
+			
+			System.out.println("Model Indexes: ");
+			
+			modelIndexes = Retriever.getModelIndexes(asser);
+			
+			for(Map.Entry<String, Double> cursor : modelIndexes.entrySet()){
+				System.out.println("Nome ModelIndexes : " + cursor.getKey() + " Valore: " + cursor.getValue());
+			}
+			
+			System.out.println();
+			
+		}
+		
+		Table<String, String, Double> tab = HashBasedTable.create();
+		tab.put("Index-1", "Weight", -1.0);
+		tab.put("Index-1", "Min", 0.0);
+		tab.put("Index-1", "Max", 4.0);
+		tab.put("Index-1", "Test", 6.9);
+		tab.put("Index-1", "Test", 10.0);
+		tab.put("Index-2", "Test", 30.0);
+		
+		Map<String, Double> row = tab.row("Index-1");
+		System.out.println();
+		
+		System.out.println("Test: " + row.get("Test"));
+		
+		Double min = tab.get("Index-2", "Min");
+		
+		System.out.println("Index-2 MIN: " + min);
+		
+		tab = Retriever.getModelWeightTable(ModelWeight.CONFIDENT);
+		tab = Retriever.getModelIndexTable(asserts, tab);
+		Multimap<QualityLevel, ASSERT> map = Retriever.groupByModelIndex(asserts, ModelWeight.CONFIDENT);
+		for( Entry<QualityLevel, ASSERT> cursor : map.entries()){
+			QualityLevel lev = cursor.getKey();
+			
+			System.out.println("Livello: " + lev.toString());
+			
+		}
+		
+		for(ASSERT ass : asserts){
+			System.out.println(Retriever.getCompleteSecurityProperty(ass));
+		}
+		
+		Retriever.getSecurityPropertyHierarchy("integrity");
+		
+		
+		Multimap<String, String> hierarchy = HashMultimap.create();
+		hierarchy.put("I50", null);
+		hierarchy.put("I50A", null);
+		hierarchy.put("I400", "I50");
+		hierarchy.put("I400", "I50A");
+		
+		Multimap<String, String> grouped = HashMultimap.create();
+		grouped.put("I400", "Test");
+		grouped.put("I400", "Prova");
+		grouped.put("I50", "Test1");
+		grouped.put("I50", "Prova1");
+		grouped.put("I50A", "Prova2");
+		
+		//Multimap<String, String> relations = Retriever.testRelations(hierarchy, grouped);
+		
+		PartiallyOrderedSet<Set<String>> test = dmf.createPartialOrder();
+//		test.add("test");
+//		test.add("Prova");
+//		test.addRelation("test", "Prova");
+//		test.add("Prova2");
+		
+		test = Retriever.getPartialOrder2(grouped, hierarchy);
+		//System.out.println(test.isGreater("test", "Prova2"));
+		//HashSet<String> provami = new HashSet<String>(1);
+		//provami.add("Prova2");
+		//test.remove(provami);
+		
+		PartiallyOrderedSet<Set<String>> testMerge = dmf.createPartialOrder();
+		HashSet<String> primo = new HashSet<String>();
+		primo.add("Test");
+		HashSet<String> secondo = new HashSet<String>();
+		secondo.add("Prova");
+		
+		HashSet<String> terzo = new HashSet<String>();
+		terzo.add("Terzo");
+		//test.add(terzo);
+		test.addRelation(test.getMinimalElements(), terzo);
+		
+		testMerge.add(primo);
+		testMerge.add(secondo);
+		testMerge.addRelation(primo, secondo);
+		
+		//Set<Set<String>> elements = test.getMinimalElements();
+		Set<Set<String>> elements = new HashSet<Set<String>>();
+		HashSet<String> element1 = new HashSet<String>();
+		element1.add("Test");
+		element1.add("Prova");
+		elements.add(element1);
+		
+		for(Set<String> element : elements){
+			test = Retriever.mergePartialOrder2(element, test, testMerge);
+		}
+		Retriever.getParentElement2(terzo, test);
+		
+		System.out.println(test.getMaximelElements());
+		System.out.println(test.getMinimalElements());
+		
+//		PartiallyOrderedSet<String> test2 = dmf.createPartialOrder();
+//		test2.add("test");
+//		test2.add("Prova");
+//		test2.addRelation("test", "Prova");
+//		test2.add("Prova2");
+//		
+//		System.out.println(test2.getMaximelElements());
+//		System.out.println(test2.getMinimalElements());
+		
+//		Multimap<String, String> testMulti = HashMultimap.create();
+//		testMulti.put("Test", "prova1");
+//		testMulti.put("Test", null);
+//		testMulti.put("Test", "prova2");
+//		
+//		Collection<String> valuesMulti = testMulti.get("Test");
+//		System.out.println(valuesMulti);
+//		
+//		testMulti.put("Test", "prova1");
+//		
+//		valuesMulti = testMulti.get("Test");
+//		System.out.println(valuesMulti);
+		
+		//System.out.println(tab.size());
+	}
+
+}

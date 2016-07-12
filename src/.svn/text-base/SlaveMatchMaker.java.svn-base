@@ -1,0 +1,162 @@
+import java.io.IOException;
+import java.util.ArrayList;
+
+import eu.unimi.basexClient.BaseXClient;
+
+
+
+/*******************************************************************
+ * Copyright (c) - Università degli Studi di Milano (Crema)
+ *
+ * @author Jonatan Maggesi <jmaggesi@gmail.com>
+ *
+ ******************************************************************/
+
+/**
+ * @author Jonatan
+ *
+ */
+public class SlaveMatchMaker {
+	
+	private final int PORT;
+	private final String PASSWORD;
+	private final String USERNAME;
+	private final String ADDRESS;
+	//private BaseXClient session;
+	
+	public SlaveMatchMaker(String address, int port, String username, String password){
+		this.ADDRESS = address;
+		this.PORT = port;
+		this.USERNAME = username;
+		this.PASSWORD = password;
+	}
+	
+	private BaseXClient getOpenConnection(){
+		try {
+			BaseXClient session = new BaseXClient(this.ADDRESS, this.PORT, this.USERNAME, this.PASSWORD);
+			return session;	
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	public ArrayList<String> getSubClasses(String element, boolean direct){
+		BaseXClient client = this.getOpenConnection();
+		
+		if(client != null){
+			ArrayList<String> result = new ArrayList<String>();
+			String input = null;
+			
+			if (direct == true){
+				//input = "declare variable $element external;" + 
+				//		"for $n in db:open('Ontology')//*[parent::$element] return $n/name()"; 
+				input = "for $n in db:open('Ontology')//*[parent::" + element + "] return $n/name()";
+			} else {
+				//input = "declare variable $element external;" + 
+				//		"for $n in db:open('Ontology')//*[ancestor::$element] return $n/name()";
+				input = "for $n in db:open('Ontology')//*[ancestor::" + element + "] return $n/name()";
+			}
+			
+			try {
+				final BaseXClient.Query query = client.query(input);
+				//query.bind("$element", element);
+				
+				while(query.more()) {
+			         result.add(query.next());
+			    }
+				query.close();
+				//client.close();
+				
+				return result;
+				
+			} catch (IOException e) {
+				return null;
+			} finally {
+				try {
+					client.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+	
+	public ArrayList<String> getSuperClasses(String element, boolean direct){
+		BaseXClient client = this.getOpenConnection();
+		if(client != null){
+			ArrayList<String> result = new ArrayList<String>();
+			String input = null;
+			
+			if (direct == true){
+//				input = "declare variable $element external; " +
+//						"for $n in db:open('Ontology')//*[child::$element] return $n/name()";
+				input = "for $n in db:open('Ontology')//*[child::" + element + "] return $n/name()";
+			} else {
+//				input = "declare variable $element external;" + 
+//						"for $n in db:open('Ontology')//*[descendant::$element] return $n/name()"; 
+				input = "for $n in db:open('Ontology')//*[descendant::" + element + "] return $n/name()";
+			}
+		
+			try {
+				final BaseXClient.Query query = client.query(input);
+				query.bind("$element", element);
+				while(query.more()) {
+			         result.add(query.next());
+			    }
+				query.close();
+				//client.close();
+				
+				return result;
+				
+			} catch (IOException e) {
+				return null;
+			} finally {
+				try {
+					client.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public ArrayList<String> getAllAssert(){
+		BaseXClient client = this.getOpenConnection();
+		ArrayList<String> results = new ArrayList<String>();
+		
+		if (client != null){
+			//String input = "declare namespace ns5='urn:assert4soa:assert:2.0'; for $n in db:open('Certificates')/ns5:ASSERT return $n";
+			String input = "declare namespace ns2='urn:oasis:names:tc:SAML:2.0:assertion'; for $n in db:open('Certificates')/ns2:Assertion return $n";
+			
+			try {
+				final BaseXClient.Query query = client.query(input);
+				//query.bind("$element", element);
+				
+				while(query.more()) {
+			         results.add(query.next());
+			    }
+				query.close();
+				//client.close();
+				
+				return results;
+				
+			} catch (IOException e) {
+				return null;
+			} finally {
+				try {
+					client.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		
+		}
+		return results;
+	}
+}

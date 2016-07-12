@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration
+END
+QualityLevel.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/QualityLevel.java
+END
+EMatchMakerModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/EMatchMakerModel.java
+END
+ModelType.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/Assert/!svn/ver/12/trunk/src/eu/unimi/ematchmakerconfiguration/ModelType.java
+END
+EMatchMakerTestEvidence.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/EMatchMakerTestEvidence.java
+END
+OrderComparison.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/OrderComparison.java
+END
+ModelWeight.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/ModelWeight.java
+END
+PropertyAttribute.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/PropertyAttribute.java
+END
+EMatchMakerConfiguration.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/Assert/!svn/ver/12/trunk/src/eu/unimi/ematchmakerconfiguration/EMatchMakerConfiguration.java
+END
+EvidenceWeight.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/EvidenceWeight.java
+END
+ComparisonType.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/ComparisonType.java
+END
+EMatchMakerSecurityProperty.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/Assert/!svn/ver/8/trunk/src/eu/unimi/ematchmakerconfiguration/EMatchMakerSecurityProperty.java
+END
